@@ -25,7 +25,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @private
    * List of event listener.
    */
-  private _listeners: ListenerInfo<string, any[]>[] = [];
+  private _listeners: ListenerInfo<Extract<keyof T, string>, any[]>[] = [];
 
   /**
    * Adds a new event listener.
@@ -78,7 +78,7 @@ export class EventManager<T extends Record<string, any[]>>
       const l = this._listeners[i];
 
       if (l.event != event)
-        return;
+        continue;
       num++;
 
       try {
@@ -110,7 +110,7 @@ export class EventManager<T extends Record<string, any[]>>
    * Get the event names queued listeners are listening to.
    * @returns A list of event names.
    */
-  public getEventNames(): string[]
+  public getEventNames(): Extract<keyof T, string>[]
   {
     return Array.from(new Set(this._listeners.map(v => v.event)));
   }
@@ -121,7 +121,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @returns The number of listeners of `event`, or the total number
    * of listeners in the queue if `event` is not given.
    */
-  public numOfListeners(event?: string): number
+  public numOfListeners(event?: Extract<keyof T, string>): number
   {
     if (typeof event != 'string')
       return this._listeners.length;
