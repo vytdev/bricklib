@@ -1,0 +1,45 @@
+{
+  "format_version": 2,
+
+  "header": {
+    "name": "BrickLib",
+    "description": "Give your vanilla Minrcraft Bedrock worlds an SMP-like experience!",
+    "uuid": "3dcf2e12-cc89-4d99-ae30-31b9cad70c62",
+    "min_engine_version": [ 1, 21, 80 ],
+    "version": "0.1.0-beta"
+  },
+
+  "modules": [
+    {
+      "description": "Behaviour",
+      "type": "data",
+      "uuid": "7e1c23f4-6fad-42a0-b3fa-833c2e5d0538",
+      "version": "1.0.0"
+    },
+    {
+      "description": "Scripts",
+      "type": "script",
+      "uuid": "d56b0e62-0f03-4b18-9d03-d73aa2182739",
+      "version": "1.0.0",
+      "language": "javascript",
+      "entry": "scripts/index.js"
+    }
+  ],
+
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.0.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0-beta"
+    }
+  ],
+
+  "metadata": {
+    "authors": [ "Vincent Yanzee J. Tan" ],
+    "license": "MIT",
+    "url": "https://github.com/vytdev/bricklib"
+  }
+}

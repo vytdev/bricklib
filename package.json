@@ -1,0 +1,32 @@
+{
+  "name": "bricklib",
+  "version": "1.0.0",
+  "description": "Give your vanilla Minecraft Bedrock worlds an SMP-like experience!",
+  "keywords": [
+    "minecraft",
+    "bedrock",
+    "smp",
+    "script",
+    "add-on"
+  ],
+  "homepage": "https://github.com/vytdev/bricklib#readme",
+  "bugs": {
+    "url": "https://github.com/vytdev/bricklib/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vytdev/bricklib.git"
+  },
+  "license": "MIT",
+  "author": "Vincent Yanzee J. Tan",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tsc"
+  },
+  "dependencies": {
+    "@minecraft/server": "^2.0.0-beta.1.21.83-stable",
+    "@minecraft/server-ui": "^2.0.0-beta.1.21.83-stable",
+    "typescript": "^5.8.3"
+  }
+}
