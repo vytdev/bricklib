@@ -53,7 +53,7 @@ export class CommandManager
    * @param names The names you want to use for the command.
    * @param fn The handler function.
    */
-  registerCommand(names: string[], fn: CommandCallback): void
+  public registerCommand(names: string[], fn: CommandCallback): void
   {
     for (const name of names)
       this._registry.set(name, fn);
@@ -63,7 +63,7 @@ export class CommandManager
    * Deregister commands by name.
    * @param names The names of the commands you want to deregister.
    */
-  deregisterCommand(names: string[]): void
+  public deregisterCommand(names: string[]): void
   {
     for (const name of names)
       this._registry.delete(name);
@@ -73,7 +73,7 @@ export class CommandManager
    * Returns true if a command exists.
    * @param name The name of the command.
    */
-  isRegistered(name: string): boolean
+  public isRegistered(name: string): boolean
   {
     return this._registry.has(name);
   }
@@ -84,7 +84,7 @@ export class CommandManager
    * @param name The name of the command.
    * @returns The command callback.
    */
-  getCommand(name: string): CommandCallback
+  public getCommand(name: string): CommandCallback
   {
     return this._registry.get(name) || this.notFoundHandler;
   }
@@ -96,7 +96,7 @@ export class CommandManager
    * @returns Status code.
    * @throws This function can throw errors.
    */
-  dispatchCommand(args: string[], src: CommandSource): CommandStatus
+  public dispatchCommand(args: string[], src: CommandSource): CommandStatus
   {
     if (args.length < 1)
       return this.notFoundHandler(src, args);
