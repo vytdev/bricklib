@@ -25,7 +25,8 @@ export type CommandCallback = (
  * @class
  * Command manager class
  */
-export class CommandManager {
+export class CommandManager
+{
   /**
    * @private
    * Index of all command names and callbacks.

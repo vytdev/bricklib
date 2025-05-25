@@ -1,3 +1,5 @@
-export * as config    from "./config.js";
+export * as config    from './config.js';
 
-export * as command   from "./command.js";
+/* modules */
+export * as command   from './command.js';
+export * as events    from './events.js';
