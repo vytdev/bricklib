@@ -1,7 +1,10 @@
 import * as bricklib from "./bricklib/index.js";
 
 
-bricklib.command.registerCommand([ 'hello', 'hi' ], (src, args) => {
+const mgr = new bricklib.command.CommandManager();
+bricklib.command.enableCustomChatCmds(mgr, '!');
+
+mgr.registerCommand([ 'hello', 'hi' ], (src, args) => {
   src.sendMessage(JSON.stringify(args));
   return 0;
 });

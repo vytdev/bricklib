@@ -1,5 +1,4 @@
 import { Player, world } from '@minecraft/server';
-import config from './config.js';
 
 
 /**
@@ -22,102 +21,127 @@ export type CommandCallback = (
               args: string[]
             ) => CommandStatus;
 
-const registry: Map<string, CommandCallback> = new Map();
-let cmdNotFoundHandler: CommandCallback = () => 1;
-let cmdPrefix: string = config.cmdPrefix;
-
-
 /**
- * Register a custom command. This may override existing cmds.
- * @param names The names you want to use for the command.
- * @param fn The handler function.
+ * @class
+ * Command manager class
  */
-export function registerCommand(names: string[], fn: CommandCallback): void
-{
-  for (const name of names)
-    registry.set(name, fn);
+export class CommandManager {
+  /**
+   * @private
+   * Index of all command names and callbacks.
+   */
+  private _registry: Map<string, CommandCallback>;
+
+  /**
+   * Handler to use when a command does not exist.
+   */
+  public notFoundHandler: CommandCallback;
+
+  /**
+   * @constructor
+   * Create a new command manager.
+   */
+  constructor()
+  {
+    this._registry = new Map();
+    this.notFoundHandler = () => { throw 'bricklib: command not found'; };
+  }
+
+  /**
+   * Register a custom command. This may override existing cmds.
+   * @param names The names you want to use for the command.
+   * @param fn The handler function.
+   */
+  registerCommand(names: string[], fn: CommandCallback): void
+  {
+    for (const name of names)
+      this._registry.set(name, fn);
+  }
+
+  /**
+   * Deregister commands by name.
+   * @param names The names of the commands you want to deregister.
+   */
+  deregisterCommand(names: string[]): void
+  {
+    for (const name of names)
+      this._registry.delete(name);
+  }
+
+  /**
+   * Returns true if a command exists.
+   * @param name The name of the command.
+   */
+  isRegistered(name: string): boolean
+  {
+    return this._registry.has(name);
+  }
+
+  /**
+   * Get the command callback if the command with `name` exists.
+   * Otherwise, return the command-not-found handler.
+   * @param name The name of the command.
+   * @returns The command callback.
+   */
+  getCommand(name: string): CommandCallback
+  {
+    return this._registry.get(name) || this.notFoundHandler;
+  }
+
+  /**
+   * Calls a command.
+   * @param args The args to pass.
+   * @param src The initiator.
+   * @returns Status code.
+   * @throws This function can throw errors.
+   */
+  dispatchCommand(args: string[], src: CommandSource): CommandStatus
+  {
+    if (args.length < 1)
+      return this.notFoundHandler(src, args);
+    return this.getCommand(args[0])(src, args);
+  }
 }
 
-
 /**
- * Set the handler when a command isn't found.
- * @param fn The command not found handler.
+ * Enable custom chat commands for `prefix`.
+ * @param mgr The command manager where we'll look up commands.
+ * @param prefix Prefix to use in chats.
+ * @returns A handle which you can pass to {@link disableCustomChatCmds}.
  */
-export function setCmdNotFoundHandler(fn: CommandCallback): void
+export function enableCustomChatCmds(mgr: CommandManager, prefix: string): any
 {
-  cmdNotFoundHandler = fn;
+  return world.beforeEvents.chatSend.subscribe(ev => {
+    const msg = ev.message;
+    if (!msg.startsWith(prefix))
+      return;
+    ev.cancel = true;
+
+    /* Dispatch the command. */
+    try {
+      mgr.dispatchCommand(
+        tokenizeCommand(msg.slice(prefix.length)),
+        ev.sender);
+    }
+    catch (e) {
+      let msg: string = '' + e;
+      if (e instanceof Error || e.stack)
+        msg += '\n' + e.stack;
+      ev.sender.sendMessage(msg);
+    }
+  });
 }
 
-
 /**
- * Get the current cmd not found handler.
- * @returns The command handler.
+ * Disable custom chat commands for this handler if it's currently
+ * enabled.
+ * @param handle The handle that is returned by enableCustomChatCmds.
  */
-export function getCmdNotFoundHandler(): CommandCallback
+export function disableCustomChatCmds(handle: any): void
 {
-  return cmdNotFoundHandler;
+  if (handle)
+    world.beforeEvents.chatSend.unsubscribe(handle);
 }
-
-
-/**
- * Change the command prefix.
- * @param prefix
- */
-export function changeCmdPrefix(prefix: string): void
-{
-  cmdPrefix = prefix;
-}
-
-
-/**
- * Get the current cmd prefix.
- * @returns The current prefix.
- */
-export function getCmdPrefix(): string
-{
-  return cmdPrefix;
-}
-
-
-/**
- * Returns true if a command exists.
- * @param name The name of the command.
- */
-export function doesCommandExist(name: string): boolean
-{
-  return registry.has(name);
-}
-
-
-/**
- * Get the command callback if the command with `name` exists.
- * Otherwise, return `null`.
- * @param name The name of the command.
- * @returns The command callback.
- */
-export function getCommand(name: string): CommandCallback | null
-{
-  return registry.get(name) || null;
-}
-
-
-/**
- * Calls a command.
- * @param args The args to pass.
- * @param src The initiator.
- * @returns Status code.
- * @throws This function can throw errors.
- */
-export function dispatchCommand(
-          args: string[],
-          src: CommandSource
-        ): CommandStatus
-{
-  if (args.length < 1 || !doesCommandExist(args[0]))
-    return cmdNotFoundHandler(src, args);
-  return getCommand(args[0])(src, args);
-}
-
 
 /**
  * Tokenizes a command string.
@@ -176,35 +200,3 @@ export function tokenizeCommand(cmd: String): string[]
 
   return result;
 }
-
-
-/**
- * Register a custom command handler.
- */
-world.beforeEvents.chatSend.subscribe(ev => {
-  const msg = ev.message;
-  if (!msg.startsWith(cmdPrefix))
-    return;
-  ev.cancel = true;
-
-  /* Dispatch the command. */
-  try {
-    dispatchCommand(
-      tokenizeCommand(msg.slice(cmdPrefix.length)),
-      ev.sender);
-  }
-  catch (e) {
-    let msg: string = '' + e;
-    if (e instanceof Error || e.stack)
-      msg += '\n' + e.stack;
-    ev.sender.sendMessage(msg);
-  }
-});
-
-
-/**
- * Set the default command-not-found handler.
- */
-setCmdNotFoundHandler(() => {
-  throw 'bricklib: command not found';
-});
