@@ -8,7 +8,7 @@ export type ListenerCallback<A extends any[]> = (...args: A) => void;
  * @interface
  * Event listener info.
  */
-export interface ListenerInfo<T extends string, A extends any[]>
+export interface ListenerInfo<T extends PropertyKey, A extends any[]>
 {
   callback: ListenerCallback<A>,
   event: T,
@@ -19,13 +19,13 @@ export interface ListenerInfo<T extends string, A extends any[]>
  * @class
  * A custom event manager.
  */
-export class EventManager<T extends Record<string, any[]>>
+export class EventManager<T extends Record<PropertyKey, any[]>>
 {
   /**
    * @private
    * List of event listener.
    */
-  private _listeners: ListenerInfo<Extract<keyof T, string>, any[]>[] = [];
+  private _listeners: ListenerInfo<keyof T, any[]>[] = [];
 
   /**
    * Adds a new event listener.
@@ -33,7 +33,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param callback The function to execute when `event` fires.
    * @param [once] Whether to only listen once.
    */
-  public addListener<K extends Extract<keyof T, string>>(
+  public addListener<K extends keyof T>(
       event: K,
       callback: ListenerCallback<T[K]>,
       once: boolean = false
@@ -53,7 +53,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param listener The listener info object.
    * @returns True when the listener was found and removed.
    */
-  public removeListener<K extends Extract<keyof T, string>>(
+  public removeListener<K extends keyof T>(
       listener: ListenerInfo<K, T[K]>): boolean
   {
     const idx = this._listeners.indexOf(listener);
@@ -69,7 +69,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param args Arguments to pass to the listeners.
    * @returns The number of listeners ran.
    */
-  public dispatchEvent<K extends Extract<keyof T, string>>(
+  public dispatchEvent<K extends keyof T>(
       event: K, ...args: T[K]): number
   {
     let num = 0;
@@ -77,7 +77,7 @@ export class EventManager<T extends Record<string, any[]>>
     for (let i = this._listeners.length - 1; i >= 0; i--) {
       const l = this._listeners[i];
 
-      if (l.event != event)
+      if (l.event !== event)
         continue;
       num++;
 
@@ -110,7 +110,7 @@ export class EventManager<T extends Record<string, any[]>>
    * Get the event names queued listeners are listening to.
    * @returns A list of event names.
    */
-  public getEventNames(): Extract<keyof T, string>[]
+  public getEventNames(): (keyof T)[]
   {
     return Array.from(new Set(this._listeners.map(v => v.event)));
   }
@@ -121,9 +121,9 @@ export class EventManager<T extends Record<string, any[]>>
    * @returns The number of listeners of `event`, or the total number
    * of listeners in the queue if `event` is not given.
    */
-  public numOfListeners(event?: Extract<keyof T, string>): number
+  public numOfListeners(event?: keyof T): number
   {
-    if (typeof event != 'string')
+    if (event == null || typeof event === 'undefined')
       return this._listeners.length;
     let num = 0;
     this._listeners.forEach(v => {
@@ -139,7 +139,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param callback
    * @returns ListenerCallback
    */
-  public on<K extends Extract<keyof T, string>>(
+  public on<K extends keyof T>(
       event: K, callback: ListenerCallback<T[K]>): ListenerInfo<K, T[K]>
   {
     return this.addListener(event, callback, false);
@@ -151,7 +151,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param callback
    * @returns ListenerCallback
    */
-  public once<K extends Extract<keyof T, string>>(
+  public once<K extends keyof T>(
       event: K, callback: ListenerCallback<T[K]>): ListenerInfo<K, T[K]>
   {
     return this.addListener(event, callback, true);
@@ -162,7 +162,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param listener
    * @returns boolean
    */
-  public off<K extends Extract<keyof T, string>>(
+  public off<K extends keyof T>(
       listener: ListenerInfo<K, T[K]>): boolean
   {
     return this.removeListener(listener);
@@ -174,7 +174,7 @@ export class EventManager<T extends Record<string, any[]>>
    * @param args
    * @returns number
    */
-  public emit<K extends Extract<keyof T, string>>(
+  public emit<K extends keyof T>(
       event: K, ...args: T[K]): number
   {
     return this.dispatchEvent(event, ...args);
