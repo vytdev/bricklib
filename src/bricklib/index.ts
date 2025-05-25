@@ -4,4 +4,5 @@ export * as config    from './config.js';
 export * as command   from './command.js';
 export * as events    from './events.js';
 export * as format    from './format.js';
+export * as glyphs    from './glyphs.js';
 export * as utils     from './utils.js';

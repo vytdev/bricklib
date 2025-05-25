@@ -17,3 +17,8 @@ mgr.registerCommand([ 'hello', 'hi' ], (src, args) => {
 ev.on('hello', (plr, ...args) => {
   plr.sendMessage('through ev mgr: ' + JSON.stringify(args));
 });
+
+mgr.registerCommand([ 'icon' ], (src) => {
+  src.sendMessage(JSON.stringify(bricklib.glyphs.glyphs));
+  return 1;
+});
