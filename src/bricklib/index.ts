@@ -1,10 +1,23 @@
-export * as config    from './config.js';
+import { system } from '@minecraft/server';
+
+/**
+ * Current version of bricklib.
+ */
+export const VERSION = '0.1.0-beta';
 
 /* modules */
-export * as command   from './command.js';
-export * as database  from './database.js';
-export * as events    from './events.js';
-export * as format    from './format.js';
-export * as glyphs    from './glyphs.js';
-export * as thread    from './thread.js';
-export * as utils     from './utils.js';
+export { default as config } from './config.js';
+export * from './command.js';
+export * from './database.js';
+export * from './events.js';
+export * from './format.js';
+export * from './glyphs.js';
+export * from './server.js';
+export * from './thread.js';
+export * from './utils.js';
+
+/* Prevents the server from crashing. */
+system.beforeEvents.watchdogTerminate.subscribe(ev => {
+  ev.cancel = true;
+  console.error('Watchdog: ' + ev.terminateReason);
+});

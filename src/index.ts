@@ -5,9 +5,9 @@ type EvTypes = {
   hello: [Player, ...string[]],
 };
 
-const mgr = new bricklib.command.CommandManager();
-const ev = new bricklib.events.EventManager<EvTypes>();
-bricklib.command.enableCustomChatCmds(mgr, '!');
+const mgr = new bricklib.CommandManager();
+const ev = new bricklib.EventManager<EvTypes>();
+bricklib.enableCustomChatCmds(mgr, '!');
 
 mgr.registerCommand([ 'hello', 'hi' ], (src, args) => {
   ev.emit('hello', src, ...args);
@@ -25,7 +25,7 @@ mgr.registerCommand([ 'icon' ], (src) => {
 
 
 mgr.registerCommand([ 'even' ], (src) => {
-  const db = new bricklib.database.Database(src);
+  const db = new bricklib.Database(src);
   db.load('even');
   let val = db.get('val') ?? 0;
 
