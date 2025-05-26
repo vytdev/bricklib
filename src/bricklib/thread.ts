@@ -185,6 +185,46 @@ export class Thread<A extends any[] = any[], R = any>
   }
 }
 
+/**
+ * Await for a Promise within synchronous generators.
+ * @param promise The Promise object.
+ * @returns A generator, which you can `yield*` in thread cofuncs.
+ */
+export function awaitFor<T>(promise: Promise<T>): Generator<void, T, void>
+{
+  let ret: T | any, err = false, done = false;
+
+  promise
+    .then(v => {
+      done = true;
+      err = false;
+      ret = v;
+    })
+    .catch(v => {
+      done = true;
+      err = true;
+      ret = v;
+    });
+
+  return (function *(): Generator<void, T, void> {
+    while (!done) yield;
+    if (err) throw ret;
+    return ret;
+  })();
+}
+
+/**
+ * Wait for a condition to become true.
+ * @param cond The function that returns the condition boolean.
+ * @returns A generator, which you can `yield*` in thread cofuncs.
+ */
+export function waitUntil(cond: () => boolean): Generator<void, void, void>
+{
+  return (function* (): Generator<void, void, void> {
+    while (!cond()) yield;
+  })();
+}
+
 
 /**
  * Setup the scheduler.
