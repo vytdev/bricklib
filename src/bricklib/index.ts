@@ -6,4 +6,5 @@ export * as database  from './database.js';
 export * as events    from './events.js';
 export * as format    from './format.js';
 export * as glyphs    from './glyphs.js';
+export * as thread    from './thread.js';
 export * as utils     from './utils.js';
