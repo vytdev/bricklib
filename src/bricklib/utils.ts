@@ -3,6 +3,12 @@
  */
 
 /**
+ * Helper type for iterators.
+ */
+export type EntryOf<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
+
+
+/**
  * Calls a function and ignore exceptions.
  */
 export function safeCall<A extends any[], R extends any>(

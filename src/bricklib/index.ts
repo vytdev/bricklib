@@ -12,6 +12,7 @@ export * from './database.js';
 export * from './events.js';
 export * from './format.js';
 export * from './glyphs.js';
+export * from './locale.js';
 export * from './server.js';
 export * from './thread.js';
 export * from './ticks.js';

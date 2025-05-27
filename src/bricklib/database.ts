@@ -1,4 +1,5 @@
 import { Entity, ItemStack, Player, world } from '@minecraft/server';
+import * as utils from './utils.js';
 
 
 /**
@@ -26,16 +27,11 @@ export interface DynamicPropertySource
 }
 
 /**
- * Helper type for iterators.
- */
-export type EntryOf<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
-
-/**
  * @class
  * Bricklib persisting storage for Minecraft.
  */
 export class Database<T extends Record<string, any>>
-    implements Iterable<EntryOf<T>>
+    implements Iterable<utils.EntryOf<T>>
 {
   /**
    * @private
@@ -165,7 +161,7 @@ export class Database<T extends Record<string, any>>
    * Get key-value pairs of all keys from the database.
    * @returns An array of key-value pairs.
    */
-  public entries(): EntryOf<T>[]
+  public entries(): utils.EntryOf<T>[]
   {
     return this.keys().map(k => [k, this._data[k]]);
   }
@@ -174,7 +170,7 @@ export class Database<T extends Record<string, any>>
    * Iterate through database's entries.
    * @returns An iterator.
    */
-  public [Symbol.iterator](): IterableIterator<EntryOf<T>>
+  public [Symbol.iterator](): IterableIterator<utils.EntryOf<T>>
   {
     return this.entries()[Symbol.iterator]();
   }
