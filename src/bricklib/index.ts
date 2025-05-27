@@ -14,6 +14,7 @@ export * from './format.js';
 export * from './glyphs.js';
 export * from './server.js';
 export * from './thread.js';
+export * from './ticks.js';
 export * from './utils.js';
 
 /* Prevents the server from crashing. */

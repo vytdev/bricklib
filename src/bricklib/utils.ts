@@ -10,7 +10,9 @@ export function safeCall<A extends any[], R extends any>(
 {
   try {
     return fn(...args);
-  } catch { /* no-op */ }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 /**
