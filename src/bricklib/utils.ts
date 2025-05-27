@@ -142,6 +142,22 @@ export function escapeRegExp(str: string): string
 }
 
 /**
+ * Generates a unique identifier (not meant for security-related stuff).
+ * @returns A string.
+ */
+export function getUID(): string
+{
+  /* This is around: 2.273 x 10^57... */
+  const charset = '0123456789' +
+      'abcdefghijklmnopqrstuvwxyz' +
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let str = '';
+  for (let i = 0; i < 32; i++)
+    str += charset[Math.floor(Math.random() * charset.length)];
+  return str;
+}
+
+/**
  * A regex for validating urls. Useful for whether filtering urls on chats,
  * or just highlighting them automatically. E-mails can match too! But it
  * isn't fully compliant with the RFC 3986 standard thing.
