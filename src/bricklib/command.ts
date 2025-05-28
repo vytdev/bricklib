@@ -165,9 +165,6 @@ export function tokenizeCommand(cmd: String): string[]
     hasToken = false;
   }
 
-  /* Remove leading whitespace. */
-  cmd = cmd.trimStart();
-
   for (const char of cmd) {
 
     if (escapeChar) {
