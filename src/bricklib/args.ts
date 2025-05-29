@@ -257,7 +257,7 @@ export function parseShortOption(
 export function parseVerb(
     cmdDef: CmdVerb, args: ArgTokenStream, upOpts: CmdOption[]): ParseResult
 {
-  const result: ParseResult = {};
+  const result: ParseResult = Object.create(null);
   let argIdx = 0;
   let hasSubCmd = false;      /* whether we had processed a subcmd */
   let stopOpts = false;       /* stop parsing of flags/options */
@@ -409,9 +409,7 @@ export function parseSubVerb(
     args.consume();
 
     /* exact match found */
-    const subResult = parseVerb(verbDef, args, []);
-    for (const k in subResult)
-      result[k] = subResult[k];
+    result[verbDef.id] = parseVerb(verbDef, args, []);
     return;
   }
 
@@ -424,10 +422,8 @@ export function parseSubVerb(
   for (const verbDef of unNamedSubs) {
     try {
       args.push();
-      const subResult = parseVerb(verbDef, args, upOpts);
+      result[verbDef.id] = parseVerb(verbDef, args, upOpts);
       args.complete();
-      for (const k in subResult)
-        result[k] = subResult[k];
       return;
     }
     catch (e) {
