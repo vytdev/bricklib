@@ -1,4 +1,4 @@
-import type { CmdArgument } from './structs.d.ts';
+import type { CmdArgument } from './defs.ts';
 import { ArgTokenStream } from './tokens.js';
 
 export const parsers = {

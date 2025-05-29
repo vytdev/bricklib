@@ -3,7 +3,7 @@ import type {
   CmdVerb,
   CmdOption,
   ParseResult,
-} from './structs.d.ts';
+} from './defs.ts';
 import { ArgTokenStream } from './tokens.js';
 
 /**
