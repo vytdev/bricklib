@@ -19,6 +19,7 @@ export * as parsers from './types.js';
 export function parseCommand(def: CmdVerb, args: string[]): ParseResult
 {
   const toks = new ArgTokenStream(args);
+  toks.consume();      /* skip the command name */
   return parseVerb(def, toks, []);
 }
 
