@@ -155,7 +155,7 @@ export function tokenizeCommand(cmd: String): string[]
   let currToken = '';
   let hasToken = false;
   let escapeChar = false;
-  let isQuoted = false;
+  let quote = null;
 
   function pushTok() {
     if (!hasToken)
@@ -179,12 +179,12 @@ export function tokenizeCommand(cmd: String): string[]
       continue;
     }
 
-    if (char == '"') {
-      isQuoted = !isQuoted;
+    if (quote ? char == quote : '"\''.includes(char)) {
+      quote = quote ? null : char;
       continue;
     }
 
-    if (!isQuoted && /\s/.test(char)) {
+    if (!quote && /\s/.test(char)) {
       pushTok();
       continue;
     }
