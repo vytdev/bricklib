@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "bricklib:hover",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "geometry": {
+        "default": "geometry.dummy"
+      },
+      "textures": {
+        "default": "textures/entity/dummy"
+      },
+      "render_controllers": [
+        "controller.render.dummy"
+      ]
+    }
+  }
+}

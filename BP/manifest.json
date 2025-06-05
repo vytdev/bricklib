@@ -2,7 +2,7 @@
   "format_version": 2,
 
   "header": {
-    "name": "BrickLib",
+    "name": "BrickLib (BEH)",
     "description": "Give your vanilla Minrcraft Bedrock worlds an SMP-like experience!",
     "uuid": "3dcf2e12-cc89-4d99-ae30-31b9cad70c62",
     "min_engine_version": [ 1, 21, 80 ],
@@ -34,6 +34,10 @@
     {
       "module_name": "@minecraft/server-ui",
       "version": "2.0.0-beta"
+    },
+    {
+      "uuid": "4be35b51-479d-4fd0-810e-ea595041a634",
+      "version": "0.1.0-beta"
     }
   ],
 

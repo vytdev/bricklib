@@ -1,0 +1,19 @@
+{
+  "namespace": "hud",
+
+  // custom actionbar location
+  "hud_actionbar_text": {
+    "size": [ "100%cm + 4px", "100%c" ],
+    "offset": [ 0, 0 ],
+    "texture": "textures/ui/Black",
+    "alpha": 0.3, // prevents from fading
+    "anchor_from": "right_middle",
+    "anchor_to": "right_middle"
+  },
+
+  "hud_actionbar_text/actionbar_message": {
+    "alpha": 1.0, // prevents from fading
+    "font_size": "medium",
+    "text_alignment": "left"
+  }
+}

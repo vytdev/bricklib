@@ -1,0 +1,33 @@
+{
+  "format_version": 2,
+
+  "header": {
+    "name": "BrickLib (RES)",
+    "description": "Give your vanilla Minrcraft Bedrock worlds an SMP-like experience!",
+    "uuid": "4be35b51-479d-4fd0-810e-ea595041a634",
+    "min_engine_version": [ 1, 21, 80 ],
+    "version": "0.1.0-beta"
+  },
+
+  "modules": [
+    {
+      "description": "Resource",
+      "type": "resources",
+      "uuid": "6e57801b-4658-4e56-8d50-ce7681945abb",
+      "version": [ 1, 0, 0 ]
+    }
+  ],
+
+  "dependencies": [
+    {
+      "uuid": "3dcf2e12-cc89-4d99-ae30-31b9cad70c62",
+      "version": "0.1.0-beta"
+    }
+  ],
+
+  "metadata": {
+    "authors": [ "Vincent Yanzee J. Tan" ],
+    "license": "MIT",
+    "url": "https://github.com/vytdev/bricklib"
+  }
+}

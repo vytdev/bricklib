@@ -1,0 +1,9 @@
+{
+  "namespace": "scoreboard",
+
+  // prevents overlap with actionbar
+  "scoreboard_sidebar": {
+    "anchor_from": "top_right",
+    "anchor_to": "top_right"
+  }
+}

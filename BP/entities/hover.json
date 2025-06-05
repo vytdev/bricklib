@@ -1,0 +1,87 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "bricklib:hover",
+      "is_summonable": true,
+      "is_spawnable": false,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "despawn": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [ "vyt", "bricklib" ]
+      },
+      // make this entity invincible!
+      "minecraft:fire_immune": true,
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "deals_damage": false
+        }
+      },
+      "minecraft:health": {
+        "value": 1,
+        "min": 1
+      },
+      "minecraft:custom_hit_test": {
+        "hitboxes": [
+          {
+            "pivot": [ 0, 100, 0 ],
+            "width": 0,
+            "height": 0
+          }
+        ]
+      },
+      // positioning
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": false
+      },
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:collision_box": {
+        "width": -1,
+        "height": -1
+      },
+      "minecraft:scale": {
+        "value": 0
+      },
+      "minecraft:movement": {
+        "value": 0
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:push_through": {
+        "value": 1
+      },
+      "minecraft:knockback_resistance": {
+        "value": 100,
+        "max": 100
+      },
+      "minecraft:ground_offset": {
+        "value": 100
+      },
+      "minecraft:navigation.walk": {
+        "can_sink": false
+      },
+      // the most important component
+      "minecraft:nameable": {
+        "allow_name_tag_renaming": false,
+        "always_show": true
+      }
+    },
+    // despawn mobevent
+    "events": {
+      "despawn": {
+        "add": {
+          "component_groups": [ "despawn" ]
+        }
+      }
+    }
+  }
+}
