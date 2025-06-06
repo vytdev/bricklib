@@ -2,9 +2,9 @@
  * server forms
  */
 
-import * as ui from '@minecraft/server-ui';
 import { Player } from '@minecraft/server';
-import { safeCall } from './utils.js';
+import * as ui from '@minecraft/server-ui';
+import * as util from './utils.js';
 
 // custom ui registry
 const registry: Map<string, BaseFormBuilder> = new Map();
@@ -63,7 +63,7 @@ export abstract class BaseFormBuilder
   protected _handleCancel(ctx: UIContext, response: ui.FormResponse): boolean
   {
     if (!response.canceled) return false;
-    safeCall(this._cancel, ctx, response.cancelationReason);
+    util.safeCall(this._cancel, ctx, response.cancelationReason);
     return true;
   }
 
@@ -167,11 +167,9 @@ export class ActionFormBuilder extends BaseFormBuilder
     return this._data.show(ctx.user).then(r => {
       playersOnUI.delete(ctx.user.id);
 
-      // the form were canceled
       if (this._handleCancel(ctx, r)) return r;
 
-      // button action
-      safeCall(this._actions[r.selection], ctx);
+      util.safeCall(this._actions[r.selection], ctx);
 
       return r;
     });
@@ -256,12 +254,10 @@ export class MessageFormBuilder extends BaseFormBuilder
     return this._data.show(ctx.user).then(r => {
       playersOnUI.delete(ctx.user.id);
 
-      // the form were canceled
       if (this._handleCancel(ctx, r)) return r;
 
-      // button action
-      if (r.selection == 0) safeCall(this._btn1, ctx);
-      else if (r.selection == 1) safeCall(this._btn2, ctx);
+      if (r.selection == 0) util.safeCall(this._btn1, ctx);
+      else if (r.selection == 1) util.safeCall(this._btn2, ctx);
 
       return r;
     });
@@ -394,14 +390,11 @@ export class ModalFormBuilder extends BaseFormBuilder
     return this._data.show(ctx.user).then(r => {
       playersOnUI.delete(ctx.user.id);
 
-      // the form were canceled
       if (this._handleCancel(ctx, r)) return r;
 
-      // process result
       const result: modalResponse = {};
       r.formValues.forEach((val, idx) => result[this._inputIds[idx]] = val);
-      // run the submit action
-      safeCall(this._submit, ctx, result);
+      util.safeCall(this._submit, ctx, result);
 
       return r;
     });
@@ -436,9 +429,9 @@ export class UIContext
   public readonly user: Player;
 
   /**
-   * whether we're on the top ui (we cant go back)
+   * whether we're on the root ui (we cant go back)
    */
-  public get topUI(): boolean
+  public get isOnRoot(): boolean
   {
     return this._uiStack.length == 1;
   }
@@ -458,15 +451,11 @@ export class UIContext
    */
   public goto(form: BaseFormBuilder | string): boolean
   {
-    // player is still on a custom ui
-    if (displayingUI(this.user)) return false;
+    if (isOnUI(this.user)) return false;
 
-    // get form data
     const ui = form instanceof BaseFormBuilder ? form : registry.get(form);
-    // not found
     if (!ui) return false;
 
-    // show to player
     this._uiStack.push(ui);
     ui.show(this);
     return true;
@@ -478,14 +467,9 @@ export class UIContext
    */
   public back(): boolean
   {
-    // player is still on a custom ui
-    if (displayingUI(this.user)) return false;
-    // we're on the top most ui
-    if (this.topUI) return false;
+    if (isOnUI(this.user) || this.isOnRoot) return false;
 
-    // pop the current ui
     this._uiStack.pop();
-    // show the last ui
     this.currentUI.show(this);
 
     return true;
@@ -497,11 +481,9 @@ export class UIContext
    */
   public backto(id: string): boolean
   {
-    // player is still on another form
-    if (displayingUI(this.user)) return false;
+    if (isOnUI(this.user)) return false;
 
-    // pop the ui until the given form id
-    while (!this.topUI) {
+    while (!this.isOnRoot) {
       this._uiStack.pop();
       if (this.currentUI.id != id)
         continue;
@@ -533,7 +515,7 @@ export function showForm(
  * @param player the player to test
  * @returns boolean
  */
-export function displayingUI(player: Player): boolean
+export function isOnUI(player: Player): boolean
 {
   return playersOnUI.has(player.id);
 }
