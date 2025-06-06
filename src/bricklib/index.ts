@@ -12,6 +12,7 @@ export * as command     from './command.js';
 export * as database    from './database.js';
 export * as events      from './events.js';
 export * as format      from './format.js';
+export * as forms       from './forms.js';
 export * as glyphs      from './glyphs.js';
 export * as locale      from './locale.js';
 export * as rawtext     from './rawtext.js';
