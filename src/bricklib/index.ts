@@ -15,6 +15,7 @@ export * as format      from './format.js';
 export * as forms       from './forms.js';
 export * as glyphs      from './glyphs.js';
 export * as locale      from './locale.js';
+export * as logger      from './logger.js';
 export * as rawtext     from './rawtext.js';
 export * as server      from './server.js';
 export * as thread      from './thread.js';
