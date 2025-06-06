@@ -66,7 +66,7 @@ export function setTickInterval<A extends any[]>(
     curr: 0,
   };
   funcs.set(idCntr, data);
-  return idCntr;
+  return idCntr++;
 }
 
 /**
@@ -117,12 +117,12 @@ system.runInterval(() => {
   for (const [id, func] of funcs) {
 
     if ('interval' in func && --func.curr <= 0) {
-      utils.safeCall(func.func.apply, {}, func.args);
+      utils.safeCall(() => func.func.apply({}, func.args));
       func.curr = func.interval;
     }
 
     if ('cntdown' in func && --func.cntdown <= 0) {
-      utils.safeCall(func.func.apply, {}, func.args);
+      utils.safeCall(() => func.func.apply({}, func.args));
       clearTickHandle(id);
     }
   }
