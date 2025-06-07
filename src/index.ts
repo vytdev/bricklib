@@ -1,5 +1,10 @@
 import { FormCancelationReason } from '@minecraft/server-ui';
 import * as bricklib from './bricklib/index.js';
+import * as gatepass from './gatepass/index.js';
+
+/* load plugins */
+bricklib.plugin.loadPlugin('gatepass');
+
 
 const mgr = new bricklib.command.CommandManager();
 bricklib.command.enableCustomChatCmds(mgr, '\\');
@@ -7,6 +12,7 @@ bricklib.command.enableCustomChatCmds(mgr, '\\');
 
 
 mgr.registerCommand([ 'hello', 'hi' ], (src, args) => {
+  gatepass.assertPermission('basic.hello', src);
   src.sendMessage(src.name + '\n' + args.join('\n') + '\nEND OF ARGS');
   return 0;
 });
@@ -23,6 +29,7 @@ const def = {
 };
 
 mgr.registerCommand(...bricklib.args.makeCommand(def, (args, src) => {
+  gatepass.assertPermission('chat.echo', src);
   src.sendMessage(args.text.join(' '));
   return 0;
 }));
@@ -37,6 +44,7 @@ nextTick(() => {
 
 
 mgr.registerCommand([ 'form' ], (src) => {
+  gatepass.assertPermission('dev.bricklib.form-cmd', src);
   src.sendMessage('please close chats');
   nextTick(() => showForm('action-frm', src));
   return 0;
