@@ -7,7 +7,6 @@ export const VERSION = '0.1.0-beta';
 
 /* modules */
 export { default as config } from './config.js';
-export * as args        from './args/index.js';
 export * as command     from './command.js';
 export * as database    from './database.js';
 export * as events      from './events.js';

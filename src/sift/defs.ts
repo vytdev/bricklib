@@ -1,5 +1,5 @@
+import type * as bricklib from '../bricklib/index.js';
 import type { ArgTokenStream } from './tokens.js';
-import type { RawString } from '../rawtext.js';
 
 /**
  * A command argument parser.
@@ -17,7 +17,7 @@ export type ParseResult<T extends {} = Record<PropertyKey, any>> = T;
 export interface CmdArgument<T = any>
 {
   id:          PropertyKey,
-  help?:       string | RawString,
+  help?:       string | bricklib.rawtext.RawString,
   name?:       string,
 
   type:        TypeParser<T>,
@@ -33,7 +33,7 @@ export interface CmdArgument<T = any>
 export interface CmdOption
 {
   id:          PropertyKey,
-  help?:       string | RawString,
+  help?:       string | bricklib.rawtext.RawString,
 
   long?:       string[],
   short?:      string,
@@ -46,7 +46,7 @@ export interface CmdOption
 export interface CmdVerb
 {
   id:          PropertyKey,
-  help?:       string | RawString,
+  help?:       string | bricklib.rawtext.RawString,
 
   name:        string,
   aliases?:    string[],

@@ -1,9 +1,12 @@
 import { FormCancelationReason } from '@minecraft/server-ui';
 import * as bricklib from './bricklib/index.js';
 import * as gatepass from './gatepass/index.js';
+import * as sift from './sift/index.js';
 
 /* load plugins */
-bricklib.plugin.loadPlugin('gatepass');
+const load = bricklib.plugin.loadPlugin;
+load('gatepass');
+load('sift');
 
 
 const mgr = new bricklib.command.CommandManager();
@@ -23,12 +26,12 @@ const def = {
   args: [
     {
       id: 'text',
-      type: bricklib.args.parsers.variadic(bricklib.args.parsers.string()),
+      type: sift.parsers.variadic(sift.parsers.string()),
     }
   ]
 };
 
-mgr.registerCommand(...bricklib.args.makeCommand(def, (args, src) => {
+mgr.registerCommand(...sift.makeCommand(def, (args, src) => {
   gatepass.assertPermission('chat.echo', src);
   src.sendMessage(args.text.join(' '));
   return 0;
