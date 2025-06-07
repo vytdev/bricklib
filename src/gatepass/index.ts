@@ -1,9 +1,17 @@
+/**
+ * Gatepass -- A permission plugin.
+ * This plugin is part of the bricklib project.
+ */
+
+import * as bricklib from '../bricklib/index.js';
 import { Player } from '@minecraft/server';
 import { checkPerm } from './permission.js';
-import * as bricklib from '../bricklib/index.js';
+
+
 export * from './permission.js';
 
-bricklib.plugin.newPlugin('brickperms', () => {
+/* make this plugin discoverable */
+bricklib.plugin.newPlugin('gatepass', () => {
   /* no-op */
 });
 
@@ -39,5 +47,5 @@ export function hasPermission(perm: string, plr: Player): boolean
 export function assertPermission(perm: string, plr: Player): void
 {
   if (!hasPermission(perm, plr))
-    throw 'brickperms: no permission: ' + perm;
+    throw 'gatepass: no permission: ' + perm;
 }
