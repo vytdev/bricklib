@@ -1,5 +1,5 @@
 /**
- * Utility functions
+ * General utility functions.
  */
 
 /**

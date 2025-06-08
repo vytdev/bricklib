@@ -1,3 +1,6 @@
+/**
+ * An event manager.
+ */
 
 /**
  * An event listener callback function.

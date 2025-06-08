@@ -1,3 +1,7 @@
+/**
+ * Persistent storage for Minecraft.
+ */
+
 import { Entity, ItemStack, Player, world } from '@minecraft/server';
 import * as utils from './utils.js';
 
@@ -15,7 +19,7 @@ export const DEFAULT_ID = 'default';
 /**
  * The max size of a database.
  */
-export const MAX_SIZE = 32768;
+export const MAX_SIZE = 32767;
 
 /**
  * Defines a dynamic property source.

@@ -1,3 +1,7 @@
+/**
+ * Manage concurrent tasks.
+ */
+
 import { system } from '@minecraft/server';
 import config from './config.js';
 import * as utils from './utils.js';

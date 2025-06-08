@@ -1,3 +1,7 @@
+/**
+ * Tick timing utilities.
+ */
+
 import { system } from '@minecraft/server';
 import * as utils from './utils.js';
 

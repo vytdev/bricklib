@@ -1,3 +1,7 @@
+/**
+ * Server utilities.
+ */
+
 import {
   world,
   system,

@@ -1,3 +1,7 @@
+/**
+ * Bricklib configuration.
+ */
+
 export default {
 
   /**
@@ -14,4 +18,5 @@ export default {
    * Number of Minecraft commands to execute from the command queue, each tick.
    */
   commandBuffer:             128,
-};
+
+} as const;

@@ -1,3 +1,8 @@
+/**
+ * Bricklib -- A wrapper library built on top of Minecraft:
+ * Bedrock Edition's scripting API.
+ */
+
 import { system } from '@minecraft/server';
 
 /**

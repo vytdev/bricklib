@@ -1,4 +1,8 @@
 /**
+ * A RawText builder for Minecraft Bedrock.
+ */
+
+/**
  * @class
  * A Minecraft rawtext builder.
  */

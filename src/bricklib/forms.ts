@@ -1,5 +1,5 @@
 /**
- * server forms
+ * Server forms UI wrapper.
  */
 
 import { Player } from '@minecraft/server';

@@ -1,3 +1,7 @@
+/**
+ * A custom command registry manager.
+ */
+
 import { Player, world } from '@minecraft/server';
 
 
