@@ -61,6 +61,7 @@ export function parseOptionArguments(ctx: ParseContext, result: ParseResult,
  * @param ctx The parsing context.
  * @param result Where to set the results.
  * @param optDefs Where to lookup option defs.
+ * @throws This function can throw errors.
  */
 export function parseLongOption(ctx: ParseContext, result: ParseResult,
     optDefs: CmdOption[]): void
@@ -72,6 +73,7 @@ export function parseLongOption(ctx: ParseContext, result: ParseResult,
   const tok = ctx.currentToken;
   if (!tok.startsWith('--'))
     return;
+  ctx.consumeToken();
 
   /* extract '--flag' and 'val' from '--flag=val' */
   const eqIdx = tok.indexOf('=');
@@ -81,9 +83,7 @@ export function parseLongOption(ctx: ParseContext, result: ParseResult,
   state.optionName = optName;
   state.reqFirstOptArg = eqIdx != -1;
 
-  /* split the tokens from the token stream */
-  ctx.replaceToken(optName);
-  ctx.consumeToken();
+  /* eq arg has to be separate */
   if (eqIdx != -1)
     ctx.insertToken(eqArg);
 
@@ -92,9 +92,54 @@ export function parseLongOption(ctx: ParseContext, result: ParseResult,
     throw 'Unknown option: ' + optName;
 
   /* count the occurences of the option */
-  result.set(optDef.id, (result.get(optDef.id) ?? 0) + 1);
-  if (optDef.args)
+  result.count(optDef.id);
+  parseOptionArguments(ctx, result, optDef.args);
+}
+
+/**
+ * Parse short options.
+ * @param ctx The parsing context.
+ * @param result Where to set the results.
+ * @param optDefs Where to lookup option defs.
+ * @throws This function can throw errors.
+ */
+export function parseShortOption(ctx: ParseContext, result: ParseResult,
+    optDefs: CmdOption[]): void
+{
+  const state = ctx.getCurrentState();
+  if (state.stopOptions || ctx.isEndOfTokens)
+    return;
+
+  const tok = ctx.currentToken;
+  if (!tok.startsWith('-'))
+    return;
+  ctx.consumeToken();
+
+  /* loop through each char */
+  for (let i = 1; i < tok.length; i++) {
+    const ch = tok[i];
+    const optName = '-' + ch;
+
+    const optDef = optDefs.find(def => def.names.includes(optName));
+    if (!optDef)
+      throw 'Unknown option: ' + optName;
+
+    result.count(optDef.id);
+    if (!optDef.args?.length)
+      continue;
+
+    /* option def has arguments */
+    const adjArg = tok.slice(i+1);
+    state.optionName = optName;
+    state.reqFirstOptArg = !!adjArg.length;
+
+    /* option args must be in a separate token */
+    if (adjArg.length)
+      ctx.insertToken(adjArg);
+
     parseOptionArguments(ctx, result, optDef.args);
+    break;
+  }
 }
 
 
@@ -133,12 +178,19 @@ const info: CmdOption[] = [
         default: 0,
       }
     ]
+  },
+  {
+    id: 'verbose',
+    names: ['-v', '--verbose'],
   }
 ];
 
 const ctx = new ParseContext(scriptArgs.slice(1));
 const result = new ParseResult();
 
-while (!ctx.isEndOfTokens)
+while (!ctx.isEndOfTokens) {
   parseLongOption(ctx, result, info);
+  if (ctx.currentToken?.[1] != '-')
+    parseShortOption(ctx, result, info);
+}
 console.log(JSON.stringify(result.getMap()));

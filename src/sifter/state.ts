@@ -135,6 +135,18 @@ export class ParseResult<T extends Record<PropertyKey, any> = any>
   private _result: T = Object.create(null) as T;
 
   /**
+   * Increment a counter. Note: this is not strictly typed.
+   * @param key The result key.
+   */
+  public count<K extends keyof T>(key: K): void
+  {
+    let cnt: any = this.get(key);
+    if (typeof cnt !== 'number')
+      cnt = 0;
+    this.set(key, cnt + 1);
+  }
+
+  /**
    * Lookups a result key.
    * @param key The key.
    * @returns The value assigned to key.
