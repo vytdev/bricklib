@@ -87,9 +87,7 @@ export function parseLongOption(ctx: ParseContext, result: ParseResult,
   if (eqIdx != -1)
     ctx.insertToken(eqArg);
 
-  const optDef = optDefs.find(def => def.names.includes(optName));
-  if (!optDef)
-    throw 'Unknown option: ' + optName;
+  const optDef = findOption(optDefs, optName);
 
   /* count the occurences of the option */
   result.count(optDef.id);
@@ -120,9 +118,7 @@ export function parseShortOption(ctx: ParseContext, result: ParseResult,
     const ch = tok[i];
     const optName = '-' + ch;
 
-    const optDef = optDefs.find(def => def.names.includes(optName));
-    if (!optDef)
-      throw 'Unknown option: ' + optName;
+    const optDef = findOption(optDefs, optName);
 
     result.count(optDef.id);
     if (!optDef.args?.length)
@@ -140,6 +136,20 @@ export function parseShortOption(ctx: ParseContext, result: ParseResult,
     parseOptionArguments(ctx, result, optDef.args);
     break;
   }
+}
+
+/**
+ * Get a long/short option definition.
+ * @param optDefs The option defs list.
+ * @param optName The name of the option.
+ * @returns Option def.
+ * @throws When the option's not found.
+ */
+export function findOption(optDefs: CmdOption[], optName: string): CmdOption
+{
+  const def = optDefs.find(def => def.names.includes(optName));
+  if (!def) throw 'Unknown option: ' + optName;
+  return def;
 }
 
 
