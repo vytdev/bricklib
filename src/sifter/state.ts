@@ -249,4 +249,8 @@ export type ParseState = {
    * the first option argument.
    */
   reqFirstOptArg?: boolean,
+  /**
+   * Whether to stop parsing options.
+   */
+  stopOptions?: boolean,
 };
