@@ -88,12 +88,13 @@ export class ParseContext
 
   /**
    * Returns the current token and advance the position pointer.
-   * @returns The current token string.
+   * @returns The current (consumed) token string.
+   * @throws When there's no more tokens to consume.
    */
   public consumeToken(): string
   {
     if (this.isEndOfTokens)
-      return null;
+      throw 'Unexpected end of input';
     return this._current.tokens[this._current.position++];
   }
 
@@ -261,8 +262,4 @@ export type ParseState = {
    * the first option argument.
    */
   reqFirstOptArg?: boolean,
-  /**
-   * Whether to stop parsing options.
-   */
-  stopOptions?: boolean,
 };

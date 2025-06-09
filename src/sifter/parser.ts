@@ -2,9 +2,7 @@ import { ParseContext, ParseResult } from './state.js';
 import type { CmdArgument, CmdOption, CmdVerb } from './types.ts';
 
 /**
- * Parse argument. This will throw an error if there's no at least 1
- * argument left on the token stream. This will not mutate `result`
- * on transformation error.
+ * Parse argument.
  * @param ctx The parsing context.
  * @param result Where to set the result.
  * @param argDef The argument definition.
@@ -13,16 +11,11 @@ import type { CmdArgument, CmdOption, CmdVerb } from './types.ts';
 export function parseArgument(ctx: ParseContext, result: ParseResult,
     argDef: CmdArgument): void
 {
-  if (ctx.isEndOfTokens)
-    throw 'Insufficient arguments';
   result.set(argDef.id, argDef.type(ctx));
 }
 
 /**
- * Parse option arguments. This will parse all the required arguments
- * mandatorily. Optional arguments will parse until one fails. After
- * a failed optional argument, only the defaults will be set. It will
- * also require parsing the first argument if `reqFirstOptArg` is set.
+ * Parse option arguments.
  * @param ctx The parsing context.
  * @param result Where to set the results.
  * @param optArgDefs The option-argument definitions.
@@ -67,7 +60,7 @@ export function parseLongOption(ctx: ParseContext, result: ParseResult,
     optDefs: CmdOption[]): void
 {
   const state = ctx.getCurrentState();
-  if (state.stopOptions || ctx.isEndOfTokens)
+  if (ctx.isEndOfTokens)
     return;
 
   const tok = ctx.currentToken;
@@ -105,7 +98,7 @@ export function parseShortOption(ctx: ParseContext, result: ParseResult,
     optDefs: CmdOption[]): void
 {
   const state = ctx.getCurrentState();
-  if (state.stopOptions || ctx.isEndOfTokens)
+  if (ctx.isEndOfTokens)
     return;
 
   const tok = ctx.currentToken;
@@ -147,60 +140,190 @@ export function parseShortOption(ctx: ParseContext, result: ParseResult,
  */
 export function findOption(optDefs: CmdOption[], optName: string): CmdOption
 {
-  const def = optDefs.find(def => def.names.includes(optName));
+  const def = optDefs?.find(def => def.names.includes(optName));
   if (!def) throw 'Unknown option: ' + optName;
   return def;
 }
 
+/**
+ * Parse a verb.
+ * @param ctx The parsing context.
+ * @param result Where to set the results.
+ * @param verbDef The verb's definition.
+ * @throws This function can throw errors.
+ */
+export function parseVerb(ctx: ParseContext, result: ParseResult,
+    verbDef: CmdVerb): void
+{
+  let stopOptions = false;
+  let argIdx = 0;
+
+  while (!ctx.isEndOfTokens) {
+    const tok = ctx.currentToken;
+
+    if (tok[0] == '-' && tok.length >= 2 && !stopOptions) {
+      /* short opts */
+      if (tok[1] != '-') {
+        parseShortOption(ctx, result, verbDef.options);
+        continue;
+      }
+      /* end-of-options delimeter */
+      if (tok.length == 2) {
+        stopOptions = true;
+        ctx.consumeToken();
+        continue;
+      }
+      /* long opts */
+      parseLongOption(ctx, result, verbDef.options);
+      continue;
+    }
+
+    /* positional arguments */
+    if (argIdx < verbDef.args?.length) {
+      const argDef = verbDef.args[argIdx++];
+      parseArgument(ctx, result, argDef);
+      continue;
+    }
+
+    /* try subcommands */
+    if (verbDef.subverbs?.length) {
+      parseSubVerb(ctx, result, verbDef.subverbs);
+      break;
+    }
+
+    throw 'Too many arguments';
+  }
+
+  /* set the defaults of other optional positional params */
+  while (argIdx < verbDef.args?.length) {
+    const argDef = verbDef.args[argIdx++];
+    if (!argDef.optional)
+      throw 'Insufficient arguments';
+    result.set(argDef.id, argDef.default);
+  }
+}
+
+/**
+ * Parse a subverb.
+ * @param ctx The parsing context.
+ * @param result Where to set the results.
+ * @param verbDefs Where to lookup subverb defs.
+ * @throws This function can throw errors.
+ */
+export function parseSubVerb(ctx: ParseContext, result: ParseResult,
+    verbDefs: CmdVerb[]): void
+{
+  const subName = ctx.consumeToken();
+  const verbDef = verbDefs.find(def =>
+      def.name == subName || def.aliases?.includes(subName));
+
+  if (!verbDef)
+    throw 'Unknown subcommand: ' + subName;
+
+  const subRes = new ParseResult();
+  parseVerb(ctx, subRes, verbDef);
+  result.set(verbDef.id, subRes);
+}
+
+
+
+
+
 
 declare const scriptArgs: string[];
 
-const info: CmdOption[] = [
-  {
-    id: 'opt',
-    names: ['--opt', '--bac', '-o'],
-    args: [
-      {
-        id: 'num',
-        type: (ctx) => +ctx.consumeToken(),
-      },
-      {
-        id: 'hello',
-        type: (ctx) => ctx.consumeToken(),
-        default: 1,
-        optional: true,
-      }
-    ]
-  },
-  {
-    id: 'another',
-    names: ['--another', '--ano', '-a'],
-    args: [
-      {
-        id: 'val',
-        type: (ctx) => {
-          const tok = ctx.consumeToken();
-          if (!/^[+-]?[0-9]+(?:\.[0-9]+)?$/.test(tok))
-            throw 'invalid number: ' + tok;
-          return +tok;
+const info: CmdVerb = {
+  id: 'cmd',
+  name: 'cmd',
+  options: [
+    {
+      id: 'opt',
+      names: ['--opt', '--bac', '-o'],
+      args: [
+        {
+          id: 'num',
+          type: (ctx) => +ctx.consumeToken(),
         },
-        optional: true,
-        default: 0,
-      }
-    ]
-  },
-  {
-    id: 'verbose',
-    names: ['-v', '--verbose'],
-  }
-];
+        {
+          id: 'hello',
+          type: (ctx) => ctx.consumeToken(),
+          default: 1,
+          optional: true,
+        }
+      ]
+    },
+    {
+      id: 'another',
+      names: ['--another', '--ano', '-a'],
+      args: [
+        {
+          id: 'val',
+          type: (ctx) => {
+            const tok = ctx.consumeToken();
+            if (!/^[+-]?[0-9]+(?:\.[0-9]+)?$/.test(tok))
+              throw 'invalid number: ' + tok;
+            return +tok;
+          },
+          optional: true,
+          default: 0,
+        }
+      ]
+    },
+    {
+      id: 'verbose',
+      names: ['-v', '--verbose'],
+    }
+  ],
+  args: [
+    {
+      id: 'arg1S',
+      type: (ctx) => ctx.consumeToken(),
+    },
+    {
+      id: 'arg2B',
+      type: (ctx) => {
+        const tok = ctx.consumeToken();
+        const val = ['false', 'true'].indexOf(tok);
+        if (val == -1) throw 'invalid boolean: ' + tok;
+        return !!val;
+      },
+    },
+    {
+      id: 'arg3N',
+      type: (ctx) => +ctx.consumeToken(),
+      optional: true,
+      default: 391
+    }
+  ],
+  subverbs: [
+    {
+      id: 'sub',
+      name: 'sub',
+      args: [
+        {
+          id: 'subArg',
+          type: (ctx) => ctx.consumeToken(),
+          optional: true,
+        }
+      ],
+      options: [
+        {
+          id: 'subOpt',
+          names: ['--sub', '-s'],
+          args: [
+            {
+              id: 'subOptArg',
+              type: (ctx) => ctx.consumeToken(),
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
 
 const ctx = new ParseContext(scriptArgs.slice(1));
 const result = new ParseResult();
 
-while (!ctx.isEndOfTokens) {
-  parseLongOption(ctx, result, info);
-  if (ctx.currentToken?.[1] != '-')
-    parseShortOption(ctx, result, info);
-}
+parseVerb(ctx, result, info);
 console.log(JSON.stringify(result.getMap()));
