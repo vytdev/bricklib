@@ -11,6 +11,7 @@ import type { CmdVerb } from './types.ts';
 
 export * from './parser.js';
 export * from './state.js';
+export * from './transforms.js';
 export type * from './types.ts';
 
 
